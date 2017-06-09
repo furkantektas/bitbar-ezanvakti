@@ -216,7 +216,6 @@ else
 		puts 'İnternet bağlantısı yok.'
 		exit
 	end
-	puts response
 	vakitler = JSON.parse(response)
 	day = Time.now.strftime("%d.%m.%Y")
 	vakit = vakitler[0]
