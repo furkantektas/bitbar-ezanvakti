@@ -206,9 +206,17 @@ else
 	if File.file?(fn)
 		ilceKodu = File.read(fn).lines.first
 	end
-	url = 'http://ezanvakti.herokuapp.com/vakitler?ilce='+ilceKodu
-	uri = URI(url)
-	response = Net::HTTP.get(uri)
+	begin
+		url = 'http://ezanvakti.herokuapp.com/vakitler?ilce='+ilceKodu
+		uri = URI(url)
+		response = Net::HTTP.get(uri)
+	rescue SocketError
+		puts '🚫'
+		puts '---'
+		puts 'İnternet bağlantısı yok.'
+		exit
+	end
+	puts response
 	vakitler = JSON.parse(response)
 	day = Time.now.strftime("%d.%m.%Y")
 	vakit = vakitler[0]
