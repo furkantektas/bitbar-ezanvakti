@@ -24,6 +24,13 @@ def gethhmm(secs)
 	return str
 end
 
+def valid_json?(string)
+  !!JSON.parse(string)
+rescue JSON::ParserError
+  false
+end
+
+
 if ARGV.count == 1
 	sehirler = {
 			"ADANA" => "9146",
@@ -216,32 +223,37 @@ else
 		puts 'İnternet bağlantısı yok.'
 		exit
 	end
-	vakitler = JSON.parse(response)
-	day = Time.now.strftime("%d.%m.%Y")
-	vakit = vakitler[0]
+    if valid_json?(response)
+        vakitler = JSON.parse(response)
+        day = Time.now.strftime("%d.%m.%Y")
+        vakit = vakitler[0]
+        vakitler.each { |data| vakit = data if data['MiladiTarihKisa'] == day }
+        now = Time.now
+        remaining = 0
+        vakitKeys = ['Imsak','Gunes','Ogle','Ikindi','Aksam','Yatsi']
+        vakitLabels = ['İmsak','Güneş','Öğle','İkindi','Akşam','Yatsı']
 
-	vakitler.each { |data| vakit = data if data['MiladiTarihKisa'] == day }
+        vakitKeys.each do |key|
+            currVakit = Time.parse(vakit[key])
+            remaining = currVakit - now
+            if remaining > 0
+                nextVakit = currVakit
+                break
+            end
+        end
+        str = "🕌 " << gethhmm(remaining) << "\n" << "---\n"
+        str << vakit['HicriTarihUzun'] << "\n"
+        vakitKeys.each_with_index { |key, index|
+            str << "%-10s " % vakitLabels[index] << ' : '
+            str << Time.parse(vakit[key]).strftime("%H:%M")
+            str << "|font=Menlo size=12" << "\n"
+        }
+        puts str
+    else
+        puts '🚫'
+        puts '---'
+        puts 'Veri alınamıyor.'
+        puts 'Yenileme sıklığını azaltmayı deneyebilirsiniz.'
+    end
 
-	now = Time.now
-	remaining = 0
-	vakitKeys = ['Imsak','Gunes','Ogle','Ikindi','Aksam','Yatsi']
-	vakitLabels = ['İmsak','Güneş','Öğle','İkindi','Akşam','Yatsı']
-
-	vakitKeys.each do |key|
-		currVakit = Time.parse(vakit[key])
-		remaining = currVakit - now
-		if remaining > 0
-			nextVakit = currVakit
-			break
-		end
-	end
-
-	str = "🕌 " << gethhmm(remaining) << "\n" << "---\n"
-	str << vakit['HicriTarihUzun'] << "\n"
-	vakitKeys.each_with_index { |key, index|
-		str << "%-10s " % vakitLabels[index] << ' : '
-		str << Time.parse(vakit[key]).strftime("%H:%M")
-		str << "|font=Menlo size=12" << "\n"
-	}
-	puts str
 end
