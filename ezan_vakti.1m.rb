@@ -207,7 +207,7 @@ else
 		ilceKodu = File.read(fn).lines.first
 	end
 	begin
-		url = 'http://ezanvakti.herokuapp.com/vakitler?ilce='+ilceKodu
+		url = 'http://ezanvakti.herokuapp.com/vakitler?ilce='+ilceKodu.to_s
 		uri = URI(url)
 		response = Net::HTTP.get(uri)
 	rescue SocketError
