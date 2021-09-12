@@ -214,7 +214,7 @@ else
 		ilceKodu = File.read(fn).lines.first
 	end
 	begin
-		url = 'http://ezanvakti.herokuapp.com/vakitler?ilce='+ilceKodu
+		url = 'http://ezanvakti.herokuapp.com/vakitler/'+ilceKodu.to_s
 		uri = URI(url)
 		response = Net::HTTP.get(uri)
 	rescue SocketError
@@ -255,5 +255,4 @@ else
         puts 'Veri alınamıyor.'
         puts 'Yenileme sıklığını azaltmayı deneyebilirsiniz.'
     end
-
 end
