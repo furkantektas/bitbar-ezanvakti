@@ -241,6 +241,12 @@ else
                 break
             end
         end
+        if remaining < 0 
+            tomorrow = (Time.now + 24 * 60 * 60).strftime("%d.%m.%Y")
+            vakitler.each { |data| vakit = data if data['MiladiTarihKisa'] == tomorrow }
+            currVakit = Time.parse(vakit['Imsak']) + 24 * 60 * 60
+            remaining = currVakit - now
+        end
         str = "🕌 " << gethhmm(remaining) << "\n" << "---\n"
         str << vakit['HicriTarihUzun'] << "\n"
         vakitKeys.each_with_index { |key, index|
